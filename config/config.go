@@ -99,6 +99,20 @@ func LoadConfig(path string) IConfig {
 				return a
 			}(),
 		},
+		rabbit: &rabbit{
+			protocol:  envMap["RABBITMQ_PROTOCOL"],
+			host:      envMap["RABBITMQ_HOST"],
+			username:  envMap["RABBITMQ_USERNAME"],
+			password:  envMap["RABBITMQ_PASSWORD"],
+			queuename: envMap["RABBITMQ_QUEUENAME"],
+			port: func() int {
+				p, err := strconv.Atoi(envMap["RABBITMQ_PORT"])
+				if err != nil {
+					log.Fatalf("load env rabbitMQ port failed: %v", err)
+				}
+				return p
+			}(),
+		},
 	}
 }
 
@@ -106,12 +120,14 @@ type IConfig interface {
 	App() IAppConfig
 	Db() IDbConfig
 	Jwt() IJwtConfig
+	Rabbit() IRabbitConfig
 }
 
 type config struct {
-	app *app
-	db  *db
-	jwt *jwt
+	app    *app
+	db     *db
+	jwt    *jwt
+	rabbit *rabbit
 }
 
 type IAppConfig interface {
@@ -215,3 +231,24 @@ func (j *jwt) AccessExpiresAt() int       { return j.accessExpiresAt }
 func (j *jwt) RefreshExpiresAt() int      { return j.refreshExpiresAt }
 func (j *jwt) SetJwtAccessExpires(t int)  { j.accessExpiresAt = t }
 func (j *jwt) SetJwtRefreshExpires(t int) { j.refreshExpiresAt = t }
+
+type IRabbitConfig interface {
+	Url() string
+}
+
+type rabbit struct {
+	protocol  string
+	host      string
+	username  string
+	password  string
+	port      int
+	queuename string
+}
+
+func (c *config) Rabbit() IRabbitConfig {
+	return c.rabbit
+}
+
+func (r *rabbit) Url() string {
+	return r.host
+}
