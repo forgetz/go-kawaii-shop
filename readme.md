@@ -8,7 +8,7 @@ docker pull postgres:alpine
 
 - start container postgres
 ```
-docker run --name kawaii_db_test -e POSTGRES_USER=kawaii -e POSTGRES_PASSWORD=123456 -p 4444:5432
+docker run --name kawaii_db_test -e POSTGRES_USER=kawaii -e POSTGRES_PASSWORD=123456 -p 4444:5432 postgres:alpine
 ```
 
 - test postgres by connecting to docker bash
