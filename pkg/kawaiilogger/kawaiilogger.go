@@ -19,7 +19,7 @@ type IKawaiiLogger interface {
 	SetResponse(res any)
 }
 
-type kawaiilogger struct {
+type kawaiiLogger struct {
 	Time       string `json:"time"`
 	Ip         string `json:"ip"`
 	Method     string `json:"method"`
@@ -31,7 +31,7 @@ type kawaiilogger struct {
 }
 
 func InitKawaiiLogger(c *fiber.Ctx, res any) IKawaiiLogger {
-	log := &kawaiilogger{
+	log := &kawaiiLogger{
 		Time:       time.Now().Local().Format("2006-01-02 15:04:05"),
 		Ip:         c.IP(),
 		Method:     c.Method(),
@@ -45,12 +45,12 @@ func InitKawaiiLogger(c *fiber.Ctx, res any) IKawaiiLogger {
 	return log
 }
 
-func (l *kawaiilogger) Print() IKawaiiLogger {
+func (l *kawaiiLogger) Print() IKawaiiLogger {
 	utils.Debug(l)
 	return l
 }
 
-func (l *kawaiilogger) Save() {
+func (l *kawaiiLogger) Save() {
 	data := utils.Output(l)
 	filename := fmt.Sprintf("./assets/logs/kawaiilogger_%v.txt", strings.ReplaceAll(time.Now().Format("2006-01-02"), "-", ""))
 	file, err := os.OpenFile(filename, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
@@ -61,18 +61,18 @@ func (l *kawaiilogger) Save() {
 	file.WriteString(string(data) + "\n")
 }
 
-func (l *kawaiilogger) SetQuery(c *fiber.Ctx) {
+func (l *kawaiiLogger) SetQuery(c *fiber.Ctx) {
 	var body any
 	if err := c.QueryParser(&body); err != nil {
-		log.Fatalf("error query parser: %v", err)
+		log.Printf("error query parser: %v", err)
 	}
 	l.Query = body
 }
 
-func (l *kawaiilogger) SetBody(c *fiber.Ctx) {
+func (l *kawaiiLogger) SetBody(c *fiber.Ctx) {
 	var body any
 	if err := c.BodyParser(&body); err != nil {
-		log.Fatalf("error body parser: %v", err)
+		log.Printf("error body parser: %v", err)
 	}
 
 	switch l.Path {
@@ -83,6 +83,6 @@ func (l *kawaiilogger) SetBody(c *fiber.Ctx) {
 	}
 }
 
-func (l *kawaiilogger) SetResponse(res any) {
+func (l *kawaiiLogger) SetResponse(res any) {
 	l.Response = res
 }

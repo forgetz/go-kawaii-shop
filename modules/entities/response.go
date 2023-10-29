@@ -7,7 +7,7 @@ import (
 
 type IResponse interface {
 	Success(code int, data any) IResponse
-	Error(code int, traceId, msg string) IResponse
+	Error(code int, traceId string, msg string) IResponse
 	Res() error
 }
 
@@ -36,6 +36,7 @@ func (r *Response) Success(code int, data any) IResponse {
 	kawaiilogger.InitKawaiiLogger(r.Context, &r.Data).Print().Save()
 	return r
 }
+
 func (r *Response) Error(code int, traceId, msg string) IResponse {
 	r.StatusCode = code
 	r.ErrorRes = &ErrorResponse{
@@ -46,6 +47,7 @@ func (r *Response) Error(code int, traceId, msg string) IResponse {
 	kawaiilogger.InitKawaiiLogger(r.Context, &r.ErrorRes).Print().Save()
 	return r
 }
+
 func (r *Response) Res() error {
 	return r.Context.Status(r.StatusCode).JSON(func() any {
 		if r.IsError {
