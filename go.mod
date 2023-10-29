@@ -1,6 +1,6 @@
 module github.com/forgetz/go-kawaii-shop
 
-go 1.18
+go 1.21
 
 require (
 	github.com/andybalholm/brotli v1.0.5 // indirect
